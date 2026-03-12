@@ -2,7 +2,7 @@
 
 export interface Env {
   DB: any;
-  api_key?: string;
+  API_KEY?: string;
 }
 
 // ============ Utility Functions ============
@@ -88,7 +88,7 @@ async function handleGetRootDomain(): Promise<Response> {
 
 async function handleSendEmail(request: Request, env: Env): Promise<Response> {
   // Get API key from pinme.toml (injected via environment)
-  const apiKey = env.api_key;
+  const apiKey = env.API_KEY;
   if (!apiKey) {
     return json({ error: 'API_KEY not configured' }, 500);
   }
