@@ -387,3 +387,112 @@ body {
   color: #0070f3;
   font-weight: 600;
 }
+
+/* Email */
+.email h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.email .desc {
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.email-form {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.email-form .form-group {
+  margin-bottom: 20px;
+}
+
+.email-form .form-group:last-of-type {
+  margin-bottom: 24px;
+}
+
+.email-form label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.email-form input,
+.email-form textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.email-form input:focus,
+.email-form textarea:focus {
+  border-color: #0070f3;
+}
+
+.email-form input:disabled,
+.email-form textarea:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.email-form textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.email-form .btn-primary {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+}
+
+.email-form .btn-primary:hover:not(:disabled) {
+  background: #0060df;
+}
+
+.email-form .btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.email .result {
+  margin-top: 24px;
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.email .result h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.email .result pre {
+  background: #f5f5f5;
+  padding: 12px;
+  border-radius: 6px;
+  font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+  font-size: 12px;
+  overflow-x: auto;
+  margin-bottom: 12px;
+}
+
+.email .result.error {
+  background: #fff5f5;
+  color: #c00;
+  text-align: center;
+}
