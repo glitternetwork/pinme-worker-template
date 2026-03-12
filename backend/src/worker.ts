@@ -2,6 +2,7 @@
 
 export interface Env {
   DB: any;
+  API_KEY: string;
 }
 
 // ============ Utility Functions ============
@@ -9,7 +10,7 @@ export interface Env {
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-API-Key',
 };
 
 function json(data: unknown, status = 200): Response {
@@ -83,6 +84,63 @@ async function handleGetRootDomain(): Promise<Response> {
   }
 }
 
+// ============ Send Email API ============
+
+async function handleSendEmail(request: Request, env: Env): Promise<Response> {
+  // Check API key
+  const apiKey = request.headers.get('X-API-Key');
+  if (!apiKey) {
+    return json({ error: 'X-API-Key header is required' }, 401);
+  }
+  if (apiKey !== env.API_KEY) {
+    return json({ error: 'Invalid API key' }, 401);
+  }
+
+  try {
+    const body = await request.json() as {
+      to?: string;
+      subject?: string;
+      html?: string;
+    };
+
+    // Validate required fields
+    if (!body.to) {
+      return json({ error: 'Email address is required' }, 400);
+    }
+    if (!body.subject) {
+      return json({ error: 'Subject is required' }, 400);
+    }
+    if (!body.html) {
+      return json({ error: 'HTML content is required' }, 400);
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(body.to)) {
+      return json({ error: 'Invalid email address' }, 400);
+    }
+
+    // Call Pinme send_email API
+    const response = await fetch('https://pinme.dev/api/v4/send_email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key': env.API_KEY,
+      },
+      body: JSON.stringify({
+        to: body.to,
+        subject: body.subject,
+        html: body.html,
+      }),
+    });
+
+    const result = await response.json();
+    return json(result);
+  } catch (error) {
+    return json({ error: 'Failed to send email' }, 500);
+  }
+}
+
 // ============ Main Entry ============
 
 export default {
@@ -99,6 +157,7 @@ export default {
       if (pathname === '/api/hello' && method === 'GET') return handleHello(env);
       if (pathname === '/api/messages' && method === 'POST') return handleAddMessage(request, env);
       if (pathname === '/api/root-domain' && method === 'GET') return handleGetRootDomain();
+      if (pathname === '/api/send-email' && method === 'POST') return handleSendEmail(request, env);
 
       return json({ error: 'Not found' }, 404);
     } catch {

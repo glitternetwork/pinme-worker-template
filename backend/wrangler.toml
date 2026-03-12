@@ -9,3 +9,4 @@ database_id = "e75f6af9-73a1-490c-80b1-4cd77895b2b9"
 
 [vars]
 VITE_WORKER_URL = "https://vite-react-ts-{hash}.pinme.pro"
+API_KEY = ""
