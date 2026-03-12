@@ -2,7 +2,7 @@
 
 export interface Env {
   DB: any;
-  API_KEY: string;
+  api_key?: string;
 }
 
 // ============ Utility Functions ============
@@ -87,15 +87,12 @@ async function handleGetRootDomain(): Promise<Response> {
 // ============ Send Email API ============
 
 async function handleSendEmail(request: Request, env: Env): Promise<Response> {
-  // Check API key
-  const apiKey = request.headers.get('X-API-Key');
+  // Get API key from pinme.toml (injected via environment)
+  const apiKey = env.api_key;
   if (!apiKey) {
-    return json({ error: 'X-API-Key header is required' }, 401);
+    return json({ error: 'API_KEY not configured' }, 500);
   }
-  if (apiKey !== env.API_KEY) {
-    return json({ error: 'Invalid API key' }, 401);
-  }
-
+  console.log(apiKey,"api-key");
   try {
     const body = await request.json() as {
       to?: string;
@@ -125,7 +122,7 @@ async function handleSendEmail(request: Request, env: Env): Promise<Response> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Key': env.API_KEY,
+        'X-API-Key': apiKey,
       },
       body: JSON.stringify({
         to: body.to,
