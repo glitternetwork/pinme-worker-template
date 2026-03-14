@@ -1,21 +1,3 @@
 # Pinme config file
 # Project name (required)
 project_name = "my-app"
-
-# CORS config
-[cors]
-origins = ["*"]
-
-# D1 database config
-[d1]
-# Database migrations directory
-migrations_dir = "db"
-# D1 database UUID (auto-filled when creating project)
-# database_id = ""
-
-# Environment variables
-[vars]
-VITE_WORKER_URL = "https://your-worker-{hash}.pinme.pro"
-
-# API Key (for sending emails, auto-filled when creating project)
-api_key = ""

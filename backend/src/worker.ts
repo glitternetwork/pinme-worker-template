@@ -1,5 +1,5 @@
 // ============ Type Definitions ============
-
+import meta from "../metadata.json"
 export interface Env {
   DB: any;
   API_KEY?: string;
@@ -86,9 +86,8 @@ async function handleGetRootDomain(): Promise<Response> {
 
 // ============ Send Email API ============
 
-async function handleSendEmail(request: Request, env: Env): Promise<Response> {
-  // Get API key from pinme.toml (injected via environment)
-  const apiKey = env.API_KEY;
+async function handleSendEmail(request: Request): Promise<Response> {
+  const apiKey = meta.api_key;
   if (!apiKey) {
     return json({ error: 'API_KEY not configured' }, 500);
   }
@@ -154,7 +153,7 @@ export default {
       if (pathname === '/api/hello' && method === 'GET') return handleHello(env);
       if (pathname === '/api/messages' && method === 'POST') return handleAddMessage(request, env);
       if (pathname === '/api/root-domain' && method === 'GET') return handleGetRootDomain();
-      if (pathname === '/api/send-email' && method === 'POST') return handleSendEmail(request, env);
+      if (pathname === '/api/send-email' && method === 'POST') return handleSendEmail(request);
 
       return json({ error: 'Not found' }, 404);
     } catch {
