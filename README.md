@@ -6,17 +6,34 @@ Pinme Official Template - Frontend-Backend separated architecture with Vite + Re
 
 ```
 .
-├── pinme.toml           # Pinme config
-├── package.json         # Root config
-├── frontend/           # Frontend app (React + Vite)
+├── pinme.toml              # Pinme config
+├── package.json            # Root config
+├── pnpm-workspace.yaml     # pnpm workspace config
+├── frontend/               # Frontend app (React + Vite)
 │   ├── src/
+│   │   ├── main.tsx
+│   │   ├── App.tsx
+│   │   ├── App.css
+│   │   ├── components/
+│   │   │   └── Header.tsx
+│   │   ├── pages/
+│   │   │   ├── Home/
+│   │   │   ├── About/
+│   │   │   ├── Demo/
+│   │   │   └── Email/
+│   │   └── utils/
+│   │       └── api.ts
+│   ├── index.html
+│   ├── vite.config.ts
+│   ├── tsconfig.json
 │   └── package.json
-├── backend/            # Backend Worker
+├── backend/                # Backend Worker
 │   ├── src/
-│   │   └── worker.ts   # <- User edits this file
-│   ├── wrangler.toml   # Wrangler config
-│   └── metadata.json   # Worker metadata (returned by API)
-├── save-worker.ts      # Build and save Worker script
+│   │   └── worker.ts       # <- User edits this file
+│   ├── wrangler.toml       # Wrangler config
+│   └── package.json
+├── db/                     # D1 database migrations
+│   └── 001_init.sql
 └── README.md
 ```
 
