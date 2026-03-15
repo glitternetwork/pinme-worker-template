@@ -87,7 +87,7 @@ async function handleGetRootDomain(): Promise<Response> {
 // ============ Send Email API ============
 
 async function handleSendEmail(request: Request): Promise<Response> {
-  const apiKey = meta.api_key;
+  const apiKey = env.API_KEY;
   if (!apiKey) {
     return json({ error: 'API_KEY not configured' }, 500);
   }
