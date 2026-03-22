@@ -7,6 +7,7 @@
     "frontend",
     "backend"
   ],
+  "packageManager": "npm@10.9.4",
   "scripts": {
     "dev": "wrangler dev --config backend/wrangler.toml",
     "build:worker": "cd backend && wrangler deploy --dry-run --outdir ../dist-worker",
@@ -15,6 +16,6 @@
     "build": "npm run build:worker && npm run build:frontend"
   },
   "devDependencies": {
-    "wrangler": "^3.0.0"
+    "wrangler": "3.114.17"
   }
 }
