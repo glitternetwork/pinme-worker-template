@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
     "dev": "wrangler dev --config backend/wrangler.toml",
     "build:worker": "cd backend && wrangler deploy --dry-run --outdir ../dist-worker",
