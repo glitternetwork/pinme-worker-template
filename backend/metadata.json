@@ -1,7 +1,7 @@
 {
+  "api_key": "xxx",
   "main_module": "worker.js",
   "project_name": "project_name",
-  "bindings": [{ "type": "d1", "name": "DB", "id": "xxx" }],
   "compatibility_date": "2024-01-01",
-  "api_key": "xxx"
+  "bindings":[{"type":"secret_text","name":"API_KEY","text":"xxx"},{ "type": "plain_text", "name": "BaseUrl", "text": "https://pinme.dev" }]
 }
