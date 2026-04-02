@@ -1,59 +1,59 @@
 # AGENTS.md
 
-## 说明
+## Overview
 
-这是一个 Pinme 全栈项目模板：
+This is a Pinme full-stack project template:
 
-- `frontend/`：前端，Vite + React + TypeScript
-- `backend/`：后端，Cloudflare Worker
-- `db/`：D1 数据库迁移
+- `frontend/`: Frontend, Vite + React + TypeScript
+- `backend/`: Backend, Cloudflare Worker
+- `db/`: D1 database migrations
 
-请优先保持模板结构清晰，不做无关重构。
+Prioritize keeping the template structure clean. Avoid unrelated refactoring.
 
-## 主要目录
+## Key Directories
 
-- `package.json`：根目录脚本
-- `pinme.toml`：项目配置
-- `frontend/src/`：前端代码
-- `backend/src/worker.ts`：后端入口
-- `backend/wrangler.toml`：Worker 配置
-- `db/001_init.sql`：初始化数据库结构
+- `package.json`: Root-level scripts
+- `pinme.toml`: Project configuration
+- `frontend/src/`: Frontend code
+- `backend/src/worker.ts`: Backend entry point
+- `backend/wrangler.toml`: Worker configuration
+- `db/001_init.sql`: Initial database schema
 
-## 改动原则
+## Modification Guidelines
 
-- 前端需求优先改 `frontend/src/`
-- 后端需求优先改 `backend/src/worker.ts`
-- 涉及配置时，同时检查 `pinme.toml` 和 `backend/wrangler.toml`
-- 不随意修改 `backend/metadata.json` 这类平台相关文件
-- 保持改动最小，避免把模板改得过重
+- For frontend changes, prefer editing `frontend/src/`
+- For backend changes, prefer editing `backend/src/worker.ts`
+- When modifying configuration, check both `pinme.toml` and `backend/wrangler.toml`
+- Do not arbitrarily modify platform-related files like `backend/metadata.json`
+- Keep changes minimal. Avoid over-engineering the template.
 
-## 常用命令
+## Common Commands
 
-- 安装依赖：`npm install`
-- 启动后端：`npm run dev`
-- 启动前端：`npm run dev:frontend`
-- 构建后端：`npm run build:worker`
-- 构建前端：`npm run build:frontend`
-- 整体构建：`npm run build`
+- Install dependencies: `npm install`
+- Start backend: `npm run dev`
+- Start frontend: `npm run dev:frontend`
+- Build backend: `npm run build:worker`
+- Build frontend: `npm run build:frontend`
+- Full build: `npm run build`
 
-## 平台 API 调用约定
+## Platform API Conventions
 
-参考文档：`docs/worker_service_api.md`
+Reference documentation: `docs/worker_service_api.md`
 
-- Worker 调用平台内部服务时，使用项目级 `X-API-Key`，不走 JWT
-- `X-API-Key` 通常由 `pinme create` 返回
-- 发邮件接口：`POST /api/v4/send_email`
-- 对话补全接口：`POST /api/v1/chat/completions?project_name=<项目名>`
-- 调用 `chat/completions` 时，`project_name` 必须和 `X-API-Key` 对应同一个项目
-- `send_email` 返回平台统一 JSON 包裹
-- `chat/completions` 可能返回普通 JSON，也可能返回流式响应
-- 文档示例默认从 Worker 环境变量读取 `API_KEY`、`PROJECT_NAME`，并可选读取 `BASE_URL`
-- 新增这类平台调用时，优先复用现有请求方式，至少带上：
+- Workers call internal platform services using the project-level `X-API-Key`, not JWT
+- `X-API-Key` is typically returned by `pinme create`
+- Send email endpoint: `POST /api/v4/send_email`
+- Chat completions endpoint: `POST /api/v1/chat/completions?project_name=<project_name>`
+- When calling `chat/completions`, the `project_name` must belong to the same project as the `X-API-Key`
+- `send_email` returns the platform's standard JSON wrapper
+- `chat/completions` may return plain JSON or a streaming response
+- Documentation examples read `API_KEY`, `PROJECT_NAME` from Worker environment variables by default, with an optional `BASE_URL`
+- When adding new platform API calls, reuse existing request patterns and include at minimum:
   - `X-API-Key`
   - `Content-Type: application/json`
 
-## 提交前检查
+## Pre-commit Checklist
 
-- 只改和任务相关的文件
-- 至少运行对应的构建命令再结束
-- 如果改了数据库相关逻辑，顺手检查 `db/001_init.sql` 是否一致
+- Only modify files related to the current task
+- Run the corresponding build command before finishing
+- If database-related logic was changed, verify consistency with `db/001_init.sql`

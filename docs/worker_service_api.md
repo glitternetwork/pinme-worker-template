@@ -1,26 +1,26 @@
-# Worker 服务接口文档
+# Worker Service API Documentation
 
-本文档仅保留 Worker 侧需要直接对接的公开调用说明。
+This document covers only the public API endpoints that Workers need to call directly.
 
-当前接口：
+Current endpoints:
 
 - `POST /api/v4/send_email`
 - `POST /api/v1/chat/completions`
 
-## 1. 总览
+## 1. Overview
 
-该接口面向 Worker 或服务端内部调用，不走 JWT，而是使用项目级 API Key。
+These endpoints are designed for internal calls from Workers or server-side code. They do not use JWT authentication but instead rely on project-level API Keys.
 
-### 认证方式
+### Authentication
 
-- 请求头使用 `X-API-Key`
-- `X-API-Key` 由 `pinme create` 返回
-- `/api/v1/chat/completions` 额外要求 `project_name` query 参数
-- `X-API-Key` 必须和 `project_name` 对应同一个项目
+- Use the `X-API-Key` request header
+- The `X-API-Key` is returned by `pinme create`
+- `/api/v1/chat/completions` additionally requires a `project_name` query parameter
+- The `X-API-Key` must correspond to the same project as `project_name`
 
-### 返回格式
+### Response Format
 
-成功时返回统一 JSON 包裹：
+On success, returns a unified JSON wrapper:
 
 ```json
 {
@@ -34,18 +34,18 @@
 
 ## 2. POST /api/v4/send_email
 
-### 接口说明
+### Description
 
-使用项目 API Key 发送邮件。
+Send an email using the project API Key.
 
-### 请求头
+### Request Headers
 
-| Header | 必填 | 说明 |
+| Header | Required | Description |
 | --- | --- | --- |
-| `X-API-Key` | 是 | 项目 API Key |
-| `Content-Type: application/json` | 建议 | 请求体为 JSON |
+| `X-API-Key` | Yes | Project API Key |
+| `Content-Type: application/json` | Recommended | Request body is JSON |
 
-### 请求体
+### Request Body
 
 ```json
 {
@@ -55,20 +55,20 @@
 }
 ```
 
-| 字段 | 类型 | 必填 | 说明 |
+| Field | Type | Required | Description |
 | --- | --- | --- | --- |
-| `to` | string | 是 | 收件人邮箱 |
-| `subject` | string | 是 | 邮件标题 |
-| `html` | string | 是 | 邮件 HTML 内容 |
+| `to` | string | Yes | Recipient email address |
+| `subject` | string | Yes | Email subject |
+| `html` | string | Yes | Email HTML content |
 
-### 校验规则
+### Validation Rules
 
-- 请求体最大 1MB
-- `to` 会做基础邮箱格式校验
-- `subject` 不能为空
-- `html` 不能为空
+- Maximum request body size is 1MB
+- `to` is validated for basic email format
+- `subject` must not be empty
+- `html` must not be empty
 
-### 成功响应
+### Success Response
 
 HTTP `200 OK`
 
@@ -82,21 +82,21 @@ HTTP `200 OK`
 }
 ```
 
-### 错误响应
+### Error Responses
 
-该接口错误会使用统一包裹格式返回。
+Errors are returned using the unified wrapper format.
 
-| 场景 | HTTP 状态码 | `code` | `msg` | `data.error` |
+| Scenario | HTTP Status | `code` | `msg` | `data.error` |
 | --- | --- | --- | --- | --- |
-| 缺少 `X-API-Key` | 401 | 500 | `fail` | `X-API-Key header is required` |
-| API Key 无效 | 401 | 500 | `fail` | `Invalid API key` |
-| JSON 非法 | 400 | 400 | `invalid param` | `Invalid JSON` |
-| 邮箱格式非法 | 400 | 400 | `invalid param` | `Invalid email address` |
-| `subject` 为空 | 400 | 400 | `invalid param` | `Subject is required` |
-| `html` 为空 | 400 | 400 | `invalid param` | `HTML content is required` |
-| 发送失败 | 500 | 500 | `fail` | `Failed to send email` |
+| Missing `X-API-Key` | 401 | 500 | `fail` | `X-API-Key header is required` |
+| Invalid API Key | 401 | 500 | `fail` | `Invalid API key` |
+| Invalid JSON | 400 | 400 | `invalid param` | `Invalid JSON` |
+| Invalid email format | 400 | 400 | `invalid param` | `Invalid email address` |
+| Empty `subject` | 400 | 400 | `invalid param` | `Subject is required` |
+| Empty `html` | 400 | 400 | `invalid param` | `HTML content is required` |
+| Send failure | 500 | 500 | `fail` | `Failed to send email` |
 
-### TypeScript 示例
+### TypeScript Example
 
 ```ts
 interface Env {
@@ -141,26 +141,26 @@ async function sendEmail(env: Env) {
 
 ## 3. POST /api/v1/chat/completions
 
-### 接口说明
+### Description
 
-该接口用于服务端代转发对话补全请求。
+This endpoint proxies chat completion requests on the server side.
 
-### 请求头
+### Request Headers
 
-| Header | 必填 | 说明 |
+| Header | Required | Description |
 | --- | --- | --- |
-| `X-API-Key` | 是 | 项目 API Key |
-| `Content-Type: application/json` | 建议 | 请求体为 JSON |
+| `X-API-Key` | Yes | Project API Key |
+| `Content-Type: application/json` | Recommended | Request body is JSON |
 
-### Query 参数
+### Query Parameters
 
-| 参数 | 类型 | 必填 | 说明 |
+| Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `project_name` | string | 是 | 项目名，必须与 `X-API-Key` 对应 |
+| `project_name` | string | Yes | Project name, must match the `X-API-Key` |
 
-### 请求体
+### Request Body
 
-请求体会按 JSON 方式转发，调用方应传入合法的对话补全请求。例如：
+The request body is forwarded as JSON. Callers should provide a valid chat completion request. For example:
 
 ```json
 {
@@ -174,7 +174,7 @@ async function sendEmail(env: Env) {
 }
 ```
 
-也支持流式请求：
+Streaming requests are also supported:
 
 ```json
 {
@@ -189,23 +189,23 @@ async function sendEmail(env: Env) {
 }
 ```
 
-### 成功响应
+### Success Response
 
-- 非流式请求：返回标准 JSON 响应
-- 流式请求：返回 `text/event-stream`
+- Non-streaming requests: Returns a standard JSON response
+- Streaming requests: Returns `text/event-stream`
 
-### 错误响应
+### Error Responses
 
-本地校验失败时，返回统一包裹格式。
+When local validation fails, errors are returned using the unified wrapper format.
 
-| 场景 | HTTP 状态码 | `code` | `msg` | `data.error` |
+| Scenario | HTTP Status | `code` | `msg` | `data.error` |
 | --- | --- | --- | --- | --- |
-| 缺少 `X-API-Key` | 401 | 500 | `fail` | `X-API-Key header is required` |
-| 缺少 `project_name` | 400 | 400 | `invalid param` | `project_name is required` |
-| API Key 与项目名不匹配 | 401 | 500 | `fail` | `Invalid API key or project name` |
-| 请求体超过 1MB 或读取失败 | 413 | 500 | `fail` | `Request body too large (max 1MB)` |
+| Missing `X-API-Key` | 401 | 500 | `fail` | `X-API-Key header is required` |
+| Missing `project_name` | 400 | 400 | `invalid param` | `project_name is required` |
+| API Key and project name mismatch | 401 | 500 | `fail` | `Invalid API key or project name` |
+| Request body exceeds 1MB or read failure | 413 | 500 | `fail` | `Request body too large (max 1MB)` |
 
-### TypeScript 示例
+### TypeScript Example
 
 ```ts
 interface Env {
@@ -247,10 +247,10 @@ async function createChatCompletion(
 }
 ```
 
-## 4. 调用方注意事项
+## 4. Caller Notes
 
-- 所有请求都要带 `X-API-Key`
-- `chat/completions` 需要额外传 `project_name`
-- `send_email` 成功时返回统一包裹 JSON
-- `chat/completions` 的成功响应可能是普通 JSON，也可能是流式响应
-- 请求体建议控制在 1MB 以内
+- All requests must include the `X-API-Key` header
+- `chat/completions` additionally requires the `project_name` query parameter
+- `send_email` returns a unified JSON wrapper on success
+- `chat/completions` success responses may be either standard JSON or a streaming response
+- Keep request body size under 1MB
