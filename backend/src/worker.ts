@@ -3,6 +3,7 @@ import meta from "../metadata.json"
 export interface Env {
   DB: any;
   API_KEY?: string;
+  BASE_URL?: string;
 }
 
 // ============ Utility Functions ============
@@ -67,31 +68,14 @@ async function handleAddMessage(request: Request, env: Env): Promise<Response> {
   return json(newMessage, 201);
 }
 
-// ============ Demo API ============
-
-async function handleGetRootDomain(): Promise<Response> {
-  try {
-    const response = await fetch('https://pinme.dev/api/v4/root_domain', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const data = await response.json();
-    return json(data);
-  } catch (error) {
-    return json({ error: 'Failed to fetch root domain' }, 500);
-  }
-}
-
 // ============ Send Email API ============
 
-async function handleSendEmail(request: Request): Promise<Response> {
+async function handleSendEmail(request: Request, env: Env): Promise<Response> {
   const apiKey = env.API_KEY;
+  const baseUrl = env.BASE_URL ?? 'https://pinme.dev';
   if (!apiKey) {
     return json({ error: 'API_KEY not configured' }, 500);
   }
-  console.log(apiKey,"api-key");
   try {
     const body = await request.json() as {
       to?: string;
@@ -117,7 +101,7 @@ async function handleSendEmail(request: Request): Promise<Response> {
     }
 
     // Call Pinme send_email API
-    const response = await fetch('https://pinme.dev/api/v4/send_email', {
+    const response = await fetch(`${baseUrl}/api/v4/send_email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -131,8 +115,8 @@ async function handleSendEmail(request: Request): Promise<Response> {
     });
 
     const result = await response.json();
-    return json(result);
-  } catch (error) {
+    return json(result, response.ok ? 200 : response.status);
+  } catch {
     return json({ error: 'Failed to send email' }, 500);
   }
 }
@@ -152,8 +136,7 @@ export default {
     try {
       if (pathname === '/api/hello' && method === 'GET') return handleHello(env);
       if (pathname === '/api/messages' && method === 'POST') return handleAddMessage(request, env);
-      if (pathname === '/api/root-domain' && method === 'GET') return handleGetRootDomain();
-      if (pathname === '/api/send-email' && method === 'POST') return handleSendEmail(request);
+      if (pathname === '/api/send-email' && method === 'POST') return handleSendEmail(request, env);
 
       return json({ error: 'Not found' }, 404);
     } catch {
