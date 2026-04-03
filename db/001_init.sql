@@ -1,10 +1,10 @@
-CREATE TABLE IF NOT EXISTS messages (
+CREATE TABLE IF NOT EXISTS records (
   id         INTEGER PRIMARY KEY AUTOINCREMENT,
   content    TEXT NOT NULL,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
-CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);
+CREATE INDEX IF NOT EXISTS idx_records_created_at ON records(created_at);
 
 -- Project table (D1 database binding)
 CREATE TABLE IF NOT EXISTS projects (

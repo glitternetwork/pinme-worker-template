@@ -1,5 +1,3 @@
-// ============ Type Definitions ============
-import meta from "../metadata.json"
 export interface Env {
   DB: any;
   API_KEY?: string;
@@ -22,50 +20,114 @@ function handleOptions(): Response {
   return new Response(null, { status: 204, headers: CORS_HEADERS });
 }
 
-// In-memory storage (use during development, switch to D1 in production)
-const messages: { id: number; content: string; created_at: string }[] = [];
-let messageId = 0;
+interface RecordItem {
+  id: number;
+  content: string;
+  created_at: string;
+}
 
-// ============ Route Handlers ============
+const records: RecordItem[] = [];
+let recordId = 0;
 
-async function handleHello(env: Env): Promise<Response> {
-    // If D1 database exists, use database
+function getSource(env: Env): 'd1' | 'memory' {
+  return env.DB ? 'd1' : 'memory';
+}
+
+async function readContent(request: Request): Promise<string> {
+  const body = await request.json() as { content?: string };
+  return (body.content ?? '').trim().slice(0, 500);
+}
+
+function parseRecordId(pathname: string): number | null {
+  const match = pathname.match(/^\/api\/records\/(\d+)$/);
+  if (!match) return null;
+
+  const id = Number(match[1]);
+  return Number.isInteger(id) ? id : null;
+}
+
+async function handleListRecords(env: Env): Promise<Response> {
   if (env.DB) {
     const { results } = await env.DB
-      .prepare('SELECT * FROM messages ORDER BY created_at DESC LIMIT 10')
+      .prepare('SELECT * FROM records ORDER BY created_at DESC LIMIT 20')
       .all();
-    return json({ message: 'Hello from Worker!', data: results, source: 'd1' });
+    return json({ data: results, source: getSource(env) });
   }
-    // Otherwise use in-memory storage
-  return json({ 
-    message: 'Hello from Worker!', 
-    data: messages.slice(-10).reverse(),
-    source: 'memory' 
+
+  return json({
+    data: records.slice(-20).reverse(),
+    source: getSource(env),
   });
 }
 
-async function handleAddMessage(request: Request, env: Env): Promise<Response> {
-  const body = await request.json() as { message?: string };
-  const message = (body.message ?? '').trim().slice(0, 500);
-  if (!message) return json({ error: 'message is required' }, 400);
+async function handleCreateRecord(request: Request, env: Env): Promise<Response> {
+  const content = await readContent(request);
+  if (!content) return json({ error: 'content is required' }, 400);
 
-    // If D1 database exists, use database
   if (env.DB) {
     const result = await env.DB
-      .prepare('INSERT INTO messages (content) VALUES (?) RETURNING *')
-      .bind(message)
+      .prepare('INSERT INTO records (content) VALUES (?) RETURNING *')
+      .bind(content)
       .first();
-    return json(result, 201);
+    return json({ data: result, source: getSource(env) }, 201);
   }
 
-    // Otherwise use in-memory storage
-  const newMessage = {
-    id: ++messageId,
-    content: message,
+  const newRecord = {
+    id: ++recordId,
+    content,
     created_at: new Date().toISOString(),
   };
-  messages.push(newMessage);
-  return json(newMessage, 201);
+  records.push(newRecord);
+  return json({ data: newRecord, source: getSource(env) }, 201);
+}
+
+async function handleUpdateRecord(request: Request, env: Env, id: number): Promise<Response> {
+  const content = await readContent(request);
+  if (!content) return json({ error: 'content is required' }, 400);
+
+  if (env.DB) {
+    const result = await env.DB
+      .prepare('UPDATE records SET content = ? WHERE id = ? RETURNING *')
+      .bind(content, id)
+      .first();
+
+    if (!result) {
+      return json({ error: 'record not found' }, 404);
+    }
+
+    return json({ data: result, source: getSource(env) });
+  }
+
+  const record = records.find((item) => item.id === id);
+  if (!record) {
+    return json({ error: 'record not found' }, 404);
+  }
+
+  record.content = content;
+  return json({ data: record, source: getSource(env) });
+}
+
+async function handleDeleteRecord(env: Env, id: number): Promise<Response> {
+  if (env.DB) {
+    const result = await env.DB
+      .prepare('DELETE FROM records WHERE id = ? RETURNING id')
+      .bind(id)
+      .first();
+
+    if (!result) {
+      return json({ error: 'record not found' }, 404);
+    }
+
+    return json({ success: true, id, source: getSource(env) });
+  }
+
+  const index = records.findIndex((item) => item.id === id);
+  if (index === -1) {
+    return json({ error: 'record not found' }, 404);
+  }
+
+  records.splice(index, 1);
+  return json({ success: true, id, source: getSource(env) });
 }
 
 // ============ Send Email API ============
@@ -127,15 +189,17 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const { pathname } = new URL(request.url);
     const method = request.method;
+    const recordId = parseRecordId(pathname);
 
-        // Handle CORS preflight request
     if (method === 'OPTIONS') {
       return handleOptions();
     }
 
     try {
-      if (pathname === '/api/hello' && method === 'GET') return handleHello(env);
-      if (pathname === '/api/messages' && method === 'POST') return handleAddMessage(request, env);
+      if (pathname === '/api/records' && method === 'GET') return handleListRecords(env);
+      if (pathname === '/api/records' && method === 'POST') return handleCreateRecord(request, env);
+      if (recordId !== null && method === 'PUT') return handleUpdateRecord(request, env, recordId);
+      if (recordId !== null && method === 'DELETE') return handleDeleteRecord(env, recordId);
       if (pathname === '/api/send-email' && method === 'POST') return handleSendEmail(request, env);
 
       return json({ error: 'Not found' }, 404);

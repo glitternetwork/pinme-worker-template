@@ -17,9 +17,8 @@ Pinme Official Template - Frontend-Backend separated architecture with Vite + Re
 │   │   ├── components/
 │   │   │   └── Header.tsx
 │   │   ├── pages/
-│   │   │   ├── Home/
+│   │   │   ├── Records/
 │   │   │   ├── About/
-│   │   │   ├── Demo/
 │   │   │   └── Email/
 │   │   └── utils/
 │   │       └── api.ts
@@ -92,8 +91,8 @@ export default {
   async fetch(request: Request, env: any) {
     const url = new URL(request.url);
     
-    if (url.pathname === '/api/hello') {
-      return new Response('Hello World!');
+    if (url.pathname === '/api/records' && request.method === 'GET') {
+      return Response.json({ data: [] });
     }
     
     return new Response('Not Found', { status: 404 });

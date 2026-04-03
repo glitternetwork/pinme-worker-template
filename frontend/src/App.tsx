@@ -28,8 +28,8 @@ export default function App() {
         </section>
 
         <section className="cta">
-          <Link to="/home" className="btn-primary">
-            Get Started -&gt;
+          <Link to="/records" className="btn-primary">
+            Open CRUD Demo -&gt;
           </Link>
         </section>
       </main>
