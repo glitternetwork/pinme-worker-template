@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
 .pnpm-store/
+frontend/pkg/
 
 # Build outputs
 dist/
