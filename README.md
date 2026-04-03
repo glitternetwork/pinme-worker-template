@@ -146,7 +146,7 @@ Edit `pinme.toml`:
 project_name = "my-app"
 
 [vars]
-VITE_WORKER_URL = ""
+VITE_API_URL = ""
 
 [d1]
 migrations_dir = "db"

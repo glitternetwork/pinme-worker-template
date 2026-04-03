@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Header from '../../components/Header';
-import { getApiUrl } from '../../utils/api';
+import { apiFetch } from '../../utils/api';
 
 export default function Email() {
   const [to, setTo] = useState('');
@@ -22,7 +22,7 @@ export default function Email() {
     setResult(null);
 
     try {
-      const res = await fetch(getApiUrl('/api/send-email'), {
+      const res = await apiFetch('/api/send-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

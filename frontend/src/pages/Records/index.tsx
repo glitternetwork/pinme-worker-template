@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import Header from '../../components/Header';
-import { API, getApiUrl } from '../../utils/api';
+import { API, apiFetch } from '../../utils/api';
 
 interface RecordItem {
   id: number;
@@ -46,7 +46,7 @@ export default function Records() {
     setError(null);
 
     try {
-      const response = await fetch(getApiUrl('/api/records'));
+      const response = await apiFetch('/api/records');
       const result = await response.json() as RecordsResponse;
 
       if (!response.ok) {
@@ -70,7 +70,7 @@ export default function Records() {
     setError(null);
 
     try {
-      const response = await fetch(getApiUrl('/api/records'), {
+      const response = await apiFetch('/api/records', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: draft }),
@@ -107,7 +107,7 @@ export default function Records() {
     setError(null);
 
     try {
-      const response = await fetch(getApiUrl(`/api/records/${recordId}`), {
+      const response = await apiFetch(`/api/records/${recordId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: editDraft }),
@@ -134,7 +134,7 @@ export default function Records() {
     setError(null);
 
     try {
-      const response = await fetch(getApiUrl(`/api/records/${recordId}`), {
+      const response = await apiFetch(`/api/records/${recordId}`, {
         method: 'DELETE',
       });
       const result = await response.json() as DeleteResponse;
