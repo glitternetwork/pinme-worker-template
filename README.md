@@ -65,7 +65,7 @@ npm run dev  # Local preview
 ### 4. Save to Platform
 
 ```bash
-npm run save
+pinme save
 ```
 
 ---
@@ -108,7 +108,7 @@ npm run dev
 ### Save & Deploy
 
 ```bash
-npm run save
+pinme save
 ```
 
 Flow:
@@ -134,7 +134,7 @@ Access `http://localhost:5173`
 | `npm run build` | Build frontend + backend |
 | `npm run build:worker` | Build backend Worker |
 | `npm run build:frontend` | Build frontend |
-| `npm run save` | **One-click deploy** (build + deploy frontend to IPFS + save Worker to platform) |
+| `pinme save` | **One-click deploy** (build + deploy frontend to IPFS + save Worker to platform) |
 
 ---
 
