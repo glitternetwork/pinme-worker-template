@@ -1,6 +1,7 @@
 export interface Env {
   DB: any;
   API_KEY?: string;
+  PROJECT_NAME?: string;
   BASE_URL?: string;
 }
 
@@ -130,6 +131,71 @@ async function handleDeleteRecord(env: Env, id: number): Promise<Response> {
   return json({ success: true, id, source: getSource(env) });
 }
 
+// ============ Auth API ============
+
+type ApiEnvelope<T> = { code: number; msg: string; data: T };
+type ApiErrorData = { error?: string };
+type UserInfo = {
+  uid: string;
+  email: string;
+  display_name: string;
+  photo_url?: string;
+  disabled: boolean;
+  email_verified: boolean;
+};
+
+// POST /api/auth/register — 邮箱密码注册，代理到 Pinme auth API
+async function handleAuthRegister(request: Request, env: Env): Promise<Response> {
+  if (!env.API_KEY || !env.PROJECT_NAME) {
+    return json({ error: 'Auth not configured' }, 500);
+  }
+  const body = await request.json() as { email?: string; password?: string; display_name?: string };
+  if (!body.email || !body.password) {
+    return json({ error: 'email and password are required' }, 400);
+  }
+  const baseUrl = env.BASE_URL ?? 'https://pinme.dev';
+  const resp = await fetch(
+    `${baseUrl}/api/v1/auth/create_user?project_name=${encodeURIComponent(env.PROJECT_NAME)}`,
+    {
+      method: 'POST',
+      headers: { 'X-API-Key': env.API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }
+  );
+  const result = await resp.json() as ApiEnvelope<UserInfo | ApiErrorData>;
+  if (!resp.ok || result.code !== 200) {
+    return json({ error: (result.data as ApiErrorData)?.error ?? result.msg }, resp.status);
+  }
+  return json({ user: result.data as UserInfo });
+}
+
+// POST /api/auth/verify — 校验前端登录后的 id_token
+async function handleAuthVerify(request: Request, env: Env): Promise<Response> {
+  if (!env.API_KEY || !env.PROJECT_NAME) {
+    return json({ error: 'Auth not configured' }, 500);
+  }
+  const body = await request.json() as { id_token?: string };
+  if (!body.id_token) {
+    return json({ error: 'id_token is required' }, 400);
+  }
+  const baseUrl = env.BASE_URL ?? 'https://pinme.dev';
+  const resp = await fetch(
+    `${baseUrl}/api/v1/auth/verify_token?project_name=${encodeURIComponent(env.PROJECT_NAME)}`,
+    {
+      method: 'POST',
+      headers: { 'X-API-Key': env.API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id_token: body.id_token }),
+    }
+  );
+  const result = await resp.json() as ApiEnvelope<{ uid: string; email?: string } | ApiErrorData>;
+  if (!resp.ok || result.code !== 200) {
+    const error = (result.data as ApiErrorData)?.error ?? result.msg;
+    // 403 = 邮箱未验证
+    return json({ error, email_not_verified: resp.status === 403 }, resp.status);
+  }
+  return json(result.data);
+}
+
 // ============ Send Email API ============
 
 async function handleSendEmail(request: Request, env: Env): Promise<Response> {
@@ -201,6 +267,8 @@ export default {
       if (recordId !== null && method === 'PUT') return handleUpdateRecord(request, env, recordId);
       if (recordId !== null && method === 'DELETE') return handleDeleteRecord(env, recordId);
       if (pathname === '/api/send-email' && method === 'POST') return handleSendEmail(request, env);
+      if (pathname === '/api/auth/register' && method === 'POST') return handleAuthRegister(request, env);
+      if (pathname === '/api/auth/verify' && method === 'POST') return handleAuthVerify(request, env);
 
       return json({ error: 'Not found' }, 404);
     } catch {

@@ -4,6 +4,7 @@ const NAV_ITEMS = [
   { path: '/', label: 'Home' },
   { path: '/records', label: 'CRUD Demo' },
   { path: '/email', label: 'Send Email' },
+  { path: '/auth', label: 'Auth Demo' },
   { path: '/about', label: 'About' },
 ];
 
