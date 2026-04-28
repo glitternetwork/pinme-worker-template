@@ -153,7 +153,7 @@ async function handleAuthRegister(request: Request, env: Env): Promise<Response>
   if (!body.email || !body.password) {
     return json({ error: 'email and password are required' }, 400);
   }
-  const baseUrl = env.BASE_URL ?? 'https://pinme.dev';
+  const baseUrl = env.BASE_URL ?? 'https://pinme.cloud';
   const resp = await fetch(
     `${baseUrl}/api/v1/auth/create_user?project_name=${encodeURIComponent(env.PROJECT_NAME)}`,
     {
@@ -178,7 +178,7 @@ async function handleAuthVerify(request: Request, env: Env): Promise<Response> {
   if (!body.id_token) {
     return json({ error: 'id_token is required' }, 400);
   }
-  const baseUrl = env.BASE_URL ?? 'https://pinme.dev';
+  const baseUrl = env.BASE_URL ?? 'https://pinme.cloud';
   const resp = await fetch(
     `${baseUrl}/api/v1/auth/verify_token?project_name=${encodeURIComponent(env.PROJECT_NAME)}`,
     {
@@ -200,7 +200,7 @@ async function handleAuthVerify(request: Request, env: Env): Promise<Response> {
 
 async function handleSendEmail(request: Request, env: Env): Promise<Response> {
   const apiKey = env.API_KEY;
-  const baseUrl = env.BASE_URL ?? 'https://pinme.dev';
+  const baseUrl = env.BASE_URL ?? 'https://pinme.cloud';
   if (!apiKey) {
     return json({ error: 'API_KEY not configured' }, 500);
   }
