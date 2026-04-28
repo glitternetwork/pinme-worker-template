@@ -19,7 +19,8 @@ Pinme Official Template - Frontend-Backend separated architecture with Vite + Re
 │   │   ├── pages/
 │   │   │   ├── Records/
 │   │   │   ├── About/
-│   │   │   └── Email/
+│   │   │   ├── Email/
+│   │   │   └── Auth/
 │   │   └── utils/
 │   │       └── api.ts
 │   ├── index.html
@@ -153,6 +154,24 @@ migrations_dir = "db"
 # database_id = "xxx"
 ```
 
+### Auth Configuration
+
+Auth demo 需要在 `frontend/.env.local` 中填入 Firebase Web 配置（来自 `pinme create` 响应的 `auth_config`）：
+
+```bash
+VITE_FIREBASE_API_KEY=your-firebase-api-key
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_TENANT_ID=your-tenant-id
+```
+
+Worker 侧需通过 secrets 配置以下变量（用于服务端代理 auth API）：
+
+```bash
+API_KEY=your-pinme-api-key
+PROJECT_NAME=your-project-name
+```
+
 Edit `backend/wrangler.toml` to configure D1, etc:
 
 ```toml
@@ -181,9 +200,10 @@ database_id = "xxx"
 
 ## Tech Stack
 
-- **Frontend**: Vite + React + TypeScript + React Router
+- **Frontend**: Vite + React + TypeScript + React Router + Firebase Auth
 - **Backend**: Cloudflare Workers (TypeScript)
 - **Database**: Cloudflare D1 (SQLite)
+- **Auth**: Pinme Identity Platform (Firebase multi-tenant)
 - **Deployment**: Pinme Platform API
 
 ---

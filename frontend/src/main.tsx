@@ -5,6 +5,7 @@ import App from './App';
 import Records from './pages/Records';
 import About from './pages/About';
 import Email from './pages/Email';
+import AuthDemo from './pages/Auth';
 import './App.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -15,6 +16,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/records" element={<Records />} />
         <Route path="/about" element={<About />} />
         <Route path="/email" element={<Email />} />
+        <Route path="/auth" element={<AuthDemo />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
