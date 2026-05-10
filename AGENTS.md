@@ -35,6 +35,7 @@ Prioritize keeping the template structure clean. Avoid unrelated refactoring.
 - Build backend: `npm run build:worker`
 - Build frontend: `npm run build:frontend`
 - Full build: `npm run build`
+- Redeploy after code changes: use only `pinme save`; do not use `pinme upload`
 
 ## Platform API Conventions
 
