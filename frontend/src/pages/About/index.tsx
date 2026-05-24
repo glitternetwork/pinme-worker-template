@@ -14,9 +14,8 @@ export default function About() {
           
           <h3>Core Features</h3>
           <ul>
-            <li><code>pinme upload</code> - Frontend static files -&gt IPFS, permanently accessible</li>
-            <li><code>pinme worker deploy</code> - Backend Worker -&gt {`{name}.pinme.pro`}</li>
-            <li><code>pinme db migrate</code> - SQL migration files -&gt D1 database</li>
+            <li><code>pinme create</code> - Create a full-stack project from the Pinme template</li>
+            <li><code>pinme save</code> - Deploy frontend, backend, and database updates in one command</li>
           </ul>
 
           <h3>Tech Stack</h3>
