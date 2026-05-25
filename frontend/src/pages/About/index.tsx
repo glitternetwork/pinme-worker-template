@@ -27,7 +27,7 @@ export default function About() {
           </ul>
 
           <div className="links">
-            <a href="https://pinme.eth.limo" target="_blank" rel="noopener noreferrer">
+            <a href="https://pinme.dev" target="_blank" rel="noopener noreferrer">
               Visit Pinme -&gt;
             </a>
           </div>
