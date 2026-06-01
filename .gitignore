@@ -3,11 +3,6 @@ node_modules/
 .pnpm-store/
 frontend/pkg/
 
-# Build outputs
-dist/
-build/
-dist-worker/
-
 # Logs
 logs/
 *.log

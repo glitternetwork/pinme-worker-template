@@ -1,0 +1,1 @@
+This folder contains the built output assets for the worker "pinme-template" generated at 2026-06-01T03:15:42.803Z.
