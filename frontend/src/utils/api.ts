@@ -8,15 +8,22 @@ interface ApiFetchOptions {
 
 type FetchLike = typeof fetch;
 
+const PINME_API_URL_PLACEHOLDER = '__PINME_VITE_API_URL__';
+
 function trimBaseUrl(url: string): string {
   return url.trim().replace(/\/+$/, '');
+}
+
+function normalizeConfiguredValue(value: string | undefined): string {
+  const trimmed = (value ?? '').trim();
+  return trimmed || PINME_API_URL_PLACEHOLDER;
 }
 
 // API Config
 // 请求后端服务器的域名地址 / Backend server domain address
 // 禁止改动 / DO NOT MODIFY
 export function getConfiguredApiBase(env: ApiEnv = import.meta.env): string {
-  return trimBaseUrl(env.VITE_API_URL || '');
+  return trimBaseUrl(normalizeConfiguredValue(env.VITE_API_URL));
 }
 
 export const API = getConfiguredApiBase();

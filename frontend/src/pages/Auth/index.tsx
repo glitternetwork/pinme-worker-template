@@ -8,17 +8,28 @@ import {
   type Auth,
 } from 'firebase/auth';
 import Header from '../../components/Header';
+import { public_client_config } from '../../utils/config';
 import { apiFetch } from '../../utils/api';
 
 type Tab = 'register' | 'login' | 'verify';
 
+function normalizePublicConfigValue(value: unknown): string {
+  if (typeof value !== 'string') {
+    return '';
+  }
+
+  const placeholderPrefix = ['__', 'PINME', '_'].join('');
+  const trimmed = value.trim();
+  return trimmed.startsWith(placeholderPrefix) ? '' : trimmed;
+}
+
 // Firebase web config — safe to expose in frontend
-// Fill in these values from your pinme project's auth_config
+// Filled from the Pinme public client config during `pinme create`.
 const FIREBASE_CONFIG = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY as string,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN as string,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID as string,
-  tenantId: import.meta.env.VITE_FIREBASE_TENANT_ID as string,
+  apiKey: normalizePublicConfigValue(public_client_config.auth_api_key),
+  authDomain: normalizePublicConfigValue(public_client_config.auth_domain),
+  projectId: normalizePublicConfigValue(public_client_config.auth_project_id),
+  tenantId: normalizePublicConfigValue(public_client_config.tenant_id),
 };
 
 let firebaseApp: FirebaseApp | null = null;
@@ -161,7 +172,7 @@ export default function AuthDemo() {
           <p>Register, login, and verify tokens using Pinme Identity Platform.</p>
         </section>
 
-        {!firebaseReady && <div className="status error">Firebase not configured — set VITE_FIREBASE_* env vars</div>}
+        {!firebaseReady && <div className="status error">Firebase not configured</div>}
 
         <div className="auth-tabs">
           {(['register', 'login', 'verify'] as Tab[]).map((t) => (

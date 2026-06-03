@@ -1,7 +1,22 @@
 {
-  "api_key": "xxx",
   "main_module": "worker.js",
-  "project_name": "project_name",
+  "project_name": "__PINME_PROJECT_NAME__",
   "compatibility_date": "2024-01-01",
-  "bindings":[{"type":"secret_text","name":"API_KEY","text":"xxx"},{ "type": "plain_text", "name": "BaseUrl", "text": "https://pinme.dev" }]
+  "bindings": [
+    {
+      "type": "secret_text",
+      "name": "API_KEY",
+      "text": "__PINME_API_KEY__"
+    },
+    {
+      "type": "plain_text",
+      "name": "PROJECT_NAME",
+      "text": "__PINME_PROJECT_NAME__"
+    },
+    {
+      "type": "plain_text",
+      "name": "BASE_URL",
+      "text": "https://pinme.cloud"
+    }
+  ]
 }
